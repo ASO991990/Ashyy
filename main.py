@@ -2,7 +2,6 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-# ذاكرة بسيطة تحفظ المرحلة لكل مستخدم
 user_sessions = {}
 
 @app.route('/whatsapp', methods=['POST'])
@@ -28,47 +27,47 @@ def whatsapp_bot():
     elif stage == "bter_type":
         if incoming_msg in ["1", "2", "3"]:
             user_sessions[from_number]["bter_type"] = incoming_msg
+            user_sessions[from_number]["stage"] = "side"
             reply = ("أي جهة البتر؟\n"
                      "١. يمين\n"
                      "٢. يسار\n"
                      "٣. الطرفين\n"
                      "اكتب رقم الخيار.")
-            user_sessions[from_number]["stage"] = "side"
         else:
             reply = "رجاءً اختار ١ أو ٢ أو ٣ لنوع البتر."
 
     elif stage == "side":
         if incoming_msg in ["1", "2", "3"]:
             user_sessions[from_number]["side"] = incoming_msg
+            user_sessions[from_number]["stage"] = "has_prosthesis"
             reply = ("هل عندك طرف اصطناعي حالي؟\n"
                      "١. نعم\n"
                      "٢. لا\n"
                      "اكتب رقم الخيار.")
-            user_sessions[from_number]["stage"] = "has_prosthesis"
         else:
             reply = "رجاءً اختار ١ أو ٢ أو ٣ للجهة."
 
     elif stage == "has_prosthesis":
         if incoming_msg in ["1", "2"]:
             user_sessions[from_number]["has_prosthesis"] = incoming_msg
+            user_sessions[from_number]["stage"] = "problem"
             reply = ("شو نوع المشكلة الأساسية اللي بتحسها؟\n"
                      "١. وجع بالجلد\n"
                      "٢. التهابات\n"
                      "٣. عدم توازن\n"
                      "٤. شيء آخر\n"
                      "اكتب رقم الخيار.")
-            user_sessions[from_number]["stage"] = "problem"
         else:
             reply = "رجاءً اختار ١ أو ٢ بوضوح."
 
     elif stage == "problem":
         if incoming_msg in ["1", "2", "3", "4"]:
             user_sessions[from_number]["problem"] = incoming_msg
+            user_sessions[from_number]["stage"] = "consult"
             reply = ("حابب نرتبلك استشارة شخصية مع أخصائي أطراف صناعية من مركز ASO؟\n"
                      "١. نعم\n"
                      "٢. لا\n"
                      "اكتب رقم الخيار.")
-            user_sessions[from_number]["stage"] = "consult"
         else:
             reply = "رجاءً اختار ١، ٢، ٣ أو ٤ لنوع المشكلة."
 
