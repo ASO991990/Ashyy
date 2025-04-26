@@ -8,7 +8,7 @@ app = Flask(__name__)
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
 client = gspread.authorize(creds)
-sheet = client.open("Ashyy Patients").sheet1  # اسم الشيت بالظبط!
+sheet = client.open("Ashyy Patients").sheet1  # <<< اسم الشيت تبعك بالظبط!
 
 # متغير لتخزين خطوات كل مستخدم
 user_data = {}
@@ -57,7 +57,7 @@ def message():
     elif step == 6:
         user_data[from_number]["amputation_level"] = incoming_msg
         
-        # تسجيل البيانات بالشيت
+        # تسجيل البيانات بجوجل شيت
         sheet.append_row([
             user_data[from_number].get("name", ""),
             user_data[from_number].get("age", ""),
