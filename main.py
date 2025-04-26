@@ -4,10 +4,17 @@ app = Flask(__name__)
 
 user_sessions = {}
 
+def normalize_numbers(text):
+    # تحويل الأرقام العربية لأرقام إنجليزية
+    arabic_numbers = '٠١٢٣٤٥٦٧٨٩'
+    english_numbers = '0123456789'
+    table = str.maketrans(arabic_numbers, english_numbers)
+    return text.translate(table)
+
 @app.route('/whatsapp', methods=['POST'])
 def whatsapp_bot():
-    incoming_msg = request.values.get('Body', '').strip().lower()  # ننظف ونحول لحروف صغيرة
-    incoming_msg = incoming_msg.replace(" ", "")  # نشيل كل الفراغات الداخلية
+    incoming_msg = request.values.get('Body', '').strip()
+    incoming_msg = normalize_numbers(incoming_msg.replace(" ", "").lower())
 
     from_number = request.values.get('From', '')
 
@@ -20,9 +27,9 @@ def whatsapp_bot():
         reply = ("أهلاً وسهلاً فيك مع مركز ASO!\n"
                  "معك Ashyy، المساعد الشخصي الذكي بإشراف أخصائيين أطراف صناعية معتمدين.\n"
                  "شو نوع البتر عندك؟\n"
-                 "١. تحت الركبة\n"
-                 "٢. فوق الركبة\n"
-                 "٣. طرف علوي\n"
+                 "1. تحت الركبة\n"
+                 "2. فوق الركبة\n"
+                 "3. طرف علوي\n"
                  "اكتب رقم الخيار.")
         user_sessions[from_number]["stage"] = "bter_type"
 
@@ -31,47 +38,47 @@ def whatsapp_bot():
             user_sessions[from_number]["bter_type"] = incoming_msg
             user_sessions[from_number]["stage"] = "side"
             reply = ("أي جهة البتر؟\n"
-                     "١. يمين\n"
-                     "٢. يسار\n"
-                     "٣. الطرفين\n"
+                     "1. يمين\n"
+                     "2. يسار\n"
+                     "3. الطرفين\n"
                      "اكتب رقم الخيار.")
         else:
-            reply = "رجاءً اختار ١ أو ٢ أو ٣ لنوع البتر."
+            reply = "رجاءً اختار 1 أو 2 أو 3 لنوع البتر."
 
     elif stage == "side":
         if incoming_msg in ["1", "2", "3"]:
             user_sessions[from_number]["side"] = incoming_msg
             user_sessions[from_number]["stage"] = "has_prosthesis"
             reply = ("هل عندك طرف اصطناعي حالي؟\n"
-                     "١. نعم\n"
-                     "٢. لا\n"
+                     "1. نعم\n"
+                     "2. لا\n"
                      "اكتب رقم الخيار.")
         else:
-            reply = "رجاءً اختار ١ أو ٢ أو ٣ للجهة."
+            reply = "رجاءً اختار 1 أو 2 أو 3 للجهة."
 
     elif stage == "has_prosthesis":
         if incoming_msg in ["1", "2"]:
             user_sessions[from_number]["has_prosthesis"] = incoming_msg
             user_sessions[from_number]["stage"] = "problem"
             reply = ("شو نوع المشكلة الأساسية اللي بتحسها؟\n"
-                     "١. وجع بالجلد\n"
-                     "٢. التهابات\n"
-                     "٣. عدم توازن\n"
-                     "٤. شيء آخر\n"
+                     "1. وجع بالجلد\n"
+                     "2. التهابات\n"
+                     "3. عدم توازن\n"
+                     "4. شيء آخر\n"
                      "اكتب رقم الخيار.")
         else:
-            reply = "رجاءً اختار ١ أو ٢ بوضوح."
+            reply = "رجاءً اختار 1 أو 2 بوضوح."
 
     elif stage == "problem":
         if incoming_msg in ["1", "2", "3", "4"]:
             user_sessions[from_number]["problem"] = incoming_msg
             user_sessions[from_number]["stage"] = "consult"
             reply = ("حابب نرتبلك استشارة شخصية مع أخصائي أطراف صناعية من مركز ASO؟\n"
-                     "١. نعم\n"
-                     "٢. لا\n"
+                     "1. نعم\n"
+                     "2. لا\n"
                      "اكتب رقم الخيار.")
         else:
-            reply = "رجاءً اختار ١، ٢، ٣ أو ٤ لنوع المشكلة."
+            reply = "رجاءً اختار 1 أو 2 أو 3 أو 4 لنوع المشكلة."
 
     elif stage == "consult":
         if incoming_msg in ["1", "2"]:
@@ -84,7 +91,7 @@ def whatsapp_bot():
                 reply = "ولا يهمك، أنا موجود دائماً إذا بدك أي مساعدة ثانية!"
             user_sessions.pop(from_number)
         else:
-            reply = "رجاءً اختار ١ أو ٢ عشان نكمل."
+            reply = "رجاءً اختار 1 أو 2 عشان نكمل."
 
     else:
         reply = "صار في خطأ بسيط، ممكن تكتب مرحبا نبدأ من أول وجديد؟"
