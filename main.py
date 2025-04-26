@@ -72,7 +72,7 @@ def whatsapp_bot():
         else:
             reply = "رجاءً اختار ١، ٢، ٣ أو ٤ لنوع المشكلة."
 
-    elif stage == "consult":
+    else
         if incoming_msg in ["1", "2"]:
             if incoming_msg == "1":
                 reply = "رائع! رح نتواصل معك قريباً لترتيب استشارة مع أخصائي أطراف صناعية بمركز ASO. شكراً لتواصلك مع Ashyy!"
