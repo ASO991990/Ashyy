@@ -6,7 +6,9 @@ user_sessions = {}
 
 @app.route('/whatsapp', methods=['POST'])
 def whatsapp_bot():
-    incoming_msg = request.values.get('Body', '').strip()
+    incoming_msg = request.values.get('Body', '').strip().lower()  # ننظف ونحول لحروف صغيرة
+    incoming_msg = incoming_msg.replace(" ", "")  # نشيل كل الفراغات الداخلية
+
     from_number = request.values.get('From', '')
 
     if from_number not in user_sessions:
