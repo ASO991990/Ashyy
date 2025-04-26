@@ -1,8 +1,16 @@
 from flask import Flask, request, Response
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 app = Flask(__name__)
 
-# تعريف متغيرات لتخزين البيانات مبدئياً
+# إعداد الاتصال بجوجل شيت
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+client = gspread.authorize(creds)
+sheet = client.open("Ashyy Patients").sheet1  # اسم الشيت بالظبط!
+
+# متغير لتخزين خطوات كل مستخدم
 user_data = {}
 
 @app.route('/message', methods=['POST'])
@@ -48,9 +56,22 @@ def message():
 
     elif step == 6:
         user_data[from_number]["amputation_level"] = incoming_msg
+        
+        # تسجيل البيانات بالشيت
+        sheet.append_row([
+            user_data[from_number].get("name", ""),
+            user_data[from_number].get("age", ""),
+            user_data[from_number].get("country", ""),
+            user_data[from_number].get("reason", ""),
+            user_data[from_number].get("side", ""),
+            user_data[from_number].get("amputation_level", ""),
+            from_number
+        ])
+
         reply = "شكراً لإجاباتك! فريق ASO رح يتواصل معك قريباً. لو ما تواصلنا خلال يومين، اتصل عالرقم 0509959101."
 
-        # هون نقدر نرسل المعلومات لجوجل شيت بالمستقبل!
+        # Reset user data بعد التخزين
+        del user_data[from_number]
 
     return Response(f"<Response><Message>{reply}</Message></Response>", mimetype="text/xml")
 
