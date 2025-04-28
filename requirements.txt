@@ -1,3 +1,5 @@
-flask
+Flask
+openai
 gspread
 oauth2client
+twilio
